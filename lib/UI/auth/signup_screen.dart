@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_flutter/UI/auth/login_screen.dart';
 import 'package:firebase_flutter/widgets/round_button.dart';
 import 'package:flutter/material.dart';
+
+import '../../utils/utils.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -13,9 +16,15 @@ class _SignupScreenState extends State<SignupScreen> {
   // Key to handle any empty Text Fields:
   final _formKey = GlobalKey<FormState>();
 
+  // Loading:
+  bool loading = false;
+
   // Controllers:
   late TextEditingController emailController;
   late TextEditingController passwordController;
+
+  // Firebase Authentication:
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -82,8 +91,11 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             RoundButton(
               title: 'Sign UP',
+              loading: loading,
               onTap: () {
-                if (_formKey.currentState!.validate()) {}
+                if (_formKey.currentState!.validate()) {
+                  signUp();
+                }
               },
             ),
             SizedBox(height: 12),
@@ -102,5 +114,34 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  // Firebase Method:
+  void signUp() {
+    // Loading true here;
+    setState(() {
+      loading = true;
+    });
+    _auth
+        .createUserWithEmailAndPassword(
+      email: emailController.text.toString(),
+      password: passwordController.text.toString(),
+    )
+        .then((value) {
+      // In case of then no loading:
+      setState(() {
+        loading = false;
+      });
+    }).onError((error, stackTrace) {
+      // Utils Class Object:
+      // Utils utils = Utils();
+
+      Utils().toastMessage(error.toString());
+
+      // In Case of Error loading is:
+      setState(() {
+        loading = false;
+      });
+    });
   }
 }
