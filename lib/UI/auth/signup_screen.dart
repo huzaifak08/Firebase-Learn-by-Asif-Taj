@@ -117,6 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   // Firebase Method:
+
   void signUp() {
     // Loading true here;
     setState(() {

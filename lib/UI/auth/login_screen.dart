@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_flutter/UI/auth/post/post_screen.dart';
 import 'package:firebase_flutter/UI/auth/signup_screen.dart';
+import 'package:firebase_flutter/utils/utils.dart';
 import 'package:firebase_flutter/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +20,12 @@ class _LoginScrrenState extends State<LoginScrren> {
   // Controllers:
   late TextEditingController emailController;
   late TextEditingController passwordController;
+
+  // Firebase Auhentication:
+  final _auth = FirebaseAuth.instance;
+
+  // Loading:
+  bool loading = false;
 
   @override
   void initState() {
@@ -88,8 +97,12 @@ class _LoginScrrenState extends State<LoginScrren> {
               ),
               RoundButton(
                 title: 'Login',
+                loading: loading,
                 onTap: () {
-                  if (_formKey.currentState!.validate()) {}
+                  if (_formKey.currentState!.validate()) {
+                    // Login Method of Firebase:
+                    login();
+                  }
                 },
               ),
               SizedBox(height: 12),
@@ -112,6 +125,48 @@ class _LoginScrrenState extends State<LoginScrren> {
           ),
         ),
       ),
+    );
+  }
+
+  void login() {
+    // Before Sign In complete do Loading:
+    setState(() {
+      loading = true;
+    });
+
+    _auth
+        .signInWithEmailAndPassword(
+            email: emailController.text.toString(),
+            password: passwordController.text.toString())
+
+        // When sign in then do this:
+        .then(
+      (value) {
+        // Show loged in email at the toast message:
+        Utils().toastMessage(value.user!.email.toString());
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostScreen(),
+            ));
+
+        // When Sign in Completes then stop Loading:
+        setState(() {
+          loading = false;
+        });
+      },
+    )
+        // In case of Errors do this:
+        .onError(
+      (error, stackTrace) {
+        Utils().toastMessage(error.toString());
+
+        // When error shows also stop the loading:
+        setState(() {
+          loading = false;
+        });
+      },
     );
   }
 }
