@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_flutter/UI/auth/login_with_phone.dart';
 import 'package:firebase_flutter/UI/auth/post/post_screen.dart';
 import 'package:firebase_flutter/UI/auth/signup_screen.dart';
 import 'package:firebase_flutter/utils/utils.dart';
@@ -6,14 +7,14 @@ import 'package:firebase_flutter/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class LoginScrren extends StatefulWidget {
-  const LoginScrren({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginScrren> createState() => _LoginScrrenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScrrenState extends State<LoginScrren> {
+class _LoginScreenState extends State<LoginScreen> {
   // Key to handle any empty Text Fields:
   final _formKey = GlobalKey<FormState>();
 
@@ -120,6 +121,27 @@ class _LoginScrrenState extends State<LoginScrren> {
                     child: Text('Sign Up'),
                   ),
                 ],
+              ),
+              SizedBox(height: 30),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginWithPhone()));
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                    ),
+                    borderRadius: BorderRadius.circular(23),
+                  ),
+                  child: Center(
+                    child: Text('Login with Phone Number'),
+                  ),
+                ),
               )
             ],
           ),

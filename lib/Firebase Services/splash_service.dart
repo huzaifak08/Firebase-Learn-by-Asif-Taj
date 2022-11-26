@@ -29,7 +29,7 @@ class SplashServices {
         Duration(seconds: 3),
         () {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => PostScreen()));
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
       );
     }
