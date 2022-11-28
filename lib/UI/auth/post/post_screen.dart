@@ -48,20 +48,57 @@ class _PostScreenState extends State<PostScreen> {
           SizedBox(width: 15),
         ],
       ),
-      body: Column(children: [
-        // Expanded is must for this realtime database:
-        Expanded(
+      body: Column(
+        children: [
+          // Read data using FirebaseAnimatedList:
+          // Expanded is must for this realtime database:
+          Expanded(
             child: FirebaseAnimatedList(
-          query: databaseRef,
-          defaultChild: Text('loading'),
-          itemBuilder: (context, snapshot, animation, index) {
-            return ListTile(
-              title: Text(snapshot.child('title').value.toString()),
-              subtitle: Text(snapshot.child('id').value.toString()),
-            );
-          },
-        )),
-      ]),
+              query: databaseRef,
+              defaultChild: Text('loading'),
+              itemBuilder: (context, snapshot, animation, index) {
+                return ListTile(
+                  title: Text(snapshot.child('title').value.toString()),
+                  subtitle: Text(snapshot.child('id').value.toString()),
+                );
+              },
+            ),
+          ),
+
+          // Read data using Stream Builder:
+
+          Expanded(
+            child: StreamBuilder(
+              stream: databaseRef.onValue,
+              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+                // If snapshot has no data then return Progress Indicator:
+
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                } else {
+                  Map<dynamic, dynamic> map =
+                      snapshot.data!.snapshot.value as dynamic;
+
+                  List<dynamic> list = [];
+
+                  list.clear();
+                  list = map.values.toList();
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.snapshot.children.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(list[index]['title']),
+                        subtitle: Text(list[index]['id']),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          )
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
