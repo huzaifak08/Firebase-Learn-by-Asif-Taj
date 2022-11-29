@@ -21,12 +21,18 @@ class _PostScreenState extends State<PostScreen> {
   // Firebase RealTime Database:
   final databaseRef = FirebaseDatabase.instance.ref('Post');
 
+  // Text Editing Controller for Search bar:
+  final searchFilterController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Post Screen'),
         centerTitle: true,
+
+        // For removing back icon on app bar:
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
               onPressed: () {
@@ -50,53 +56,51 @@ class _PostScreenState extends State<PostScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextFormField(
+              controller: searchFilterController,
+              decoration: InputDecoration(
+                hintText: 'Search',
+                border: OutlineInputBorder(),
+              ),
+
+              // For Search Filter:
+              onChanged: (value) {
+                setState(() {});
+              },
+            ),
+          ),
           // Read data using FirebaseAnimatedList:
           // Expanded is must for this realtime database:
           Expanded(
             child: FirebaseAnimatedList(
               query: databaseRef,
-              defaultChild: Text('loading'),
+              defaultChild: Center(child: CircularProgressIndicator()),
               itemBuilder: (context, snapshot, animation, index) {
-                return ListTile(
-                  title: Text(snapshot.child('title').value.toString()),
-                  subtitle: Text(snapshot.child('id').value.toString()),
-                );
-              },
-            ),
-          ),
+                // For Search Filter;
 
-          // Read data using Stream Builder:
+                final title = snapshot.child('title').value.toString();
 
-          Expanded(
-            child: StreamBuilder(
-              stream: databaseRef.onValue,
-              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-                // If snapshot has no data then return Progress Indicator:
-
-                if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
-                } else {
-                  Map<dynamic, dynamic> map =
-                      snapshot.data!.snapshot.value as dynamic;
-
-                  List<dynamic> list = [];
-
-                  list.clear();
-                  list = map.values.toList();
-
-                  return ListView.builder(
-                    itemCount: snapshot.data!.snapshot.children.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(list[index]['title']),
-                        subtitle: Text(list[index]['id']),
-                      );
-                    },
+                if (searchFilterController.text.isEmpty) {
+                  return ListTile(
+                    title: Text(snapshot.child('title').value.toString()),
+                    subtitle: Text(snapshot.child('id').value.toString()),
                   );
+                } else if (title
+                    .toLowerCase()
+                    .contains(searchFilterController.text.toLowerCase())) {
+                  return ListTile(
+                    title: Text(snapshot.child('title').value.toString()),
+                    subtitle: Text(snapshot.child('id').value.toString()),
+                  );
+                } else {
+                  return Container();
                 }
               },
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
