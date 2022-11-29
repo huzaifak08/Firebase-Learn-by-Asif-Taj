@@ -52,11 +52,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 // databaseRef.child('1').set({
 
                 // Here the id of the child and the inner id will change according to time millisecond:
+
+                String id = DateTime.now().microsecondsSinceEpoch.toString();
                 databaseRef
                     // You can use child with in the child using-> toString().child()
-                    .child(DateTime.now().microsecondsSinceEpoch.toString())
+                    .child(id)
                     .set({
-                  'id': DateTime.now().microsecondsSinceEpoch.toString(),
+                  'id': id,
                   'title': postController.text.toString(),
                 }).then((value) {
                   // Loading is flase when complete:
@@ -65,6 +67,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   });
 
                   Utils().toastMessage('Post Created Successfully');
+
+                  Navigator.pop(context);
                 }).onError((error, stackTrace) {
                   // Loading is flase when error occours:
                   setState(() {

@@ -23,6 +23,7 @@ class _PostScreenState extends State<PostScreen> {
 
   // Text Editing Controller for Search bar:
   final searchFilterController = TextEditingController();
+  final editController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +88,30 @@ class _PostScreenState extends State<PostScreen> {
                   return ListTile(
                     title: Text(snapshot.child('title').value.toString()),
                     subtitle: Text(snapshot.child('id').value.toString()),
+                    trailing: PopupMenuButton(
+                      icon: Icon(Icons.more_vert),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: ListTile(
+                            title: Text('Edit'),
+                            leading: Icon(Icons.edit),
+                            onTap: () {
+                              Navigator.pop(context);
+                              showMyDialog(
+                                  title, snapshot.child('id').value.toString());
+                            },
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 1,
+                          child: ListTile(
+                            title: Text('Delete'),
+                            leading: Icon(Icons.delete),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 } else if (title
                     .toLowerCase()
@@ -113,6 +138,41 @@ class _PostScreenState extends State<PostScreen> {
         },
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  Future<void> showMyDialog(String oldTitle, String id) async {
+    editController.text = oldTitle;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            child: TextField(
+              controller: editController,
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  databaseRef.child(id).update({
+                    'title': editController.text.toString(),
+                  }).then((value) {
+                    Utils().toastMessage('Post Updated Successfully');
+                  }).onError((error, stackTrace) {
+                    Utils().toastMessage(error.toString());
+                  });
+                },
+                child: Text('Update')),
+          ],
+        );
+      },
     );
   }
 }
