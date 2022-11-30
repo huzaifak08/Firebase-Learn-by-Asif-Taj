@@ -108,6 +108,13 @@ class _PostScreenState extends State<PostScreen> {
                           child: ListTile(
                             title: Text('Delete'),
                             leading: Icon(Icons.delete),
+                            onTap: () {
+                              Navigator.pop(context);
+                              // Firebase Delete:
+                              databaseRef
+                                  .child(snapshot.child('id').value.toString())
+                                  .remove();
+                            },
                           ),
                         ),
                       ],
@@ -161,6 +168,8 @@ class _PostScreenState extends State<PostScreen> {
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
+
+                  // Firebase Update:
                   databaseRef.child(id).update({
                     'title': editController.text.toString(),
                   }).then((value) {
