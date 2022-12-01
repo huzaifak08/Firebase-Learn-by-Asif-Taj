@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -20,6 +21,8 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
   final auth = FirebaseAuth.instance;
 
   // Firebase RealTime Database:
+  final firestoreRef =
+      FirebaseFirestore.instance.collection('users').snapshots();
 
   // Text Editing Controller for Search bar:
   final editController = TextEditingController();
@@ -61,13 +64,26 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
           // Read data using FirebaseAnimatedList:
           // Expanded is must for this realtime database:
 
-          Expanded(
-              child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (context, index) => ListTile(
-              title: Text('Huzaifa'),
-            ),
-          ))
+          StreamBuilder<QuerySnapshot>(
+            stream: firestoreRef,
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return CircularProgressIndicator();
+
+              if (snapshot.hasError) return Text('Some Error Occoured');
+
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) => ListTile(
+                    title: Text(snapshot.data!.docs[index]['title'].toString()),
+                    subtitle: Text(snapshot.data!.docs[index]['id'].toString()),
+                  ),
+                ),
+              );
+            },
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(

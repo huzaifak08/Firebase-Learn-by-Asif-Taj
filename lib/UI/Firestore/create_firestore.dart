@@ -14,7 +14,7 @@ class CreateFirestorePost extends StatefulWidget {
 class _CreateFirestorePostState extends State<CreateFirestorePost> {
   bool loading = false;
 
-  // A Table/Node of name Post is created in realtime database:
+  // A Collection of name users is created in Firestore database:
   final firestoreRef = FirebaseFirestore.instance.collection('users');
 
   // Post Text Field Controller:
