@@ -19,6 +19,7 @@ class _CreateFirestorePostState extends State<CreateFirestorePost> {
 
   // Post Text Field Controller:
   final postController = TextEditingController();
+  final editController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +72,36 @@ class _CreateFirestorePostState extends State<CreateFirestorePost> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> showMyDialog(String oldTitle, String id) async {
+    editController.text = oldTitle;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            child: TextField(
+              controller: editController,
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+
+                  // Firebase Update:
+                },
+                child: Text('Update')),
+          ],
+        );
+      },
     );
   }
 }

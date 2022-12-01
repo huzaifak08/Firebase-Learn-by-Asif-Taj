@@ -20,9 +20,12 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
   // Firebase Auth:
   final auth = FirebaseAuth.instance;
 
-  // Firebase RealTime Database:
+  // Firebase Firestore Database Snapshot Reference to Read Data:
   final firestoreRef =
       FirebaseFirestore.instance.collection('users').snapshots();
+
+  // For Update and Delete, We neeed Collection Reference:
+  final collectionRef = FirebaseFirestore.instance.collection('users');
 
   // Text Editing Controller for Search bar:
   final editController = TextEditingController();
@@ -79,6 +82,68 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
                   itemBuilder: (context, index) => ListTile(
                     title: Text(snapshot.data!.docs[index]['title'].toString()),
                     subtitle: Text(snapshot.data!.docs[index]['id'].toString()),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              // Firestore Update:
+
+                              String oldTitle = (snapshot
+                                  .data!.docs[index]['title']
+                                  .toString());
+
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  // To make Old title available on Field by default:
+
+                                  editController.text = oldTitle;
+
+                                  return AlertDialog(
+                                    content: Container(
+                                      child: TextField(
+                                        controller: editController,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Cancel')),
+                                      TextButton(
+                                          onPressed: () {
+                                            collectionRef
+                                                .doc(snapshot
+                                                    .data!.docs[index]['id']
+                                                    .toString())
+                                                .update({
+                                              'id': snapshot
+                                                  .data!.docs[index]['id']
+                                                  .toString(),
+                                              'title': editController.text
+                                                  .toString(),
+                                            }).then((value) {
+                                              Navigator.pop(context);
+
+                                              Utils()
+                                                  .toastMessage('Post Updated');
+                                            }).onError((error, stackTrace) {
+                                              Utils().toastMessage(
+                                                  error.toString());
+                                            });
+                                          },
+                                          child: Text('Update')),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.edit)),
+                        IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -96,36 +161,6 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
         },
         child: Icon(Icons.add),
       ),
-    );
-  }
-
-  Future<void> showMyDialog(String oldTitle, String id) async {
-    editController.text = oldTitle;
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Container(
-            child: TextField(
-              controller: editController,
-            ),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel')),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-
-                  // Firebase Update:
-                },
-                child: Text('Update')),
-          ],
-        );
-      },
     );
   }
 }
