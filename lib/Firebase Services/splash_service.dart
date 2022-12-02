@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_flutter/UI/Firestore/read_firestore.dart';
 import 'package:firebase_flutter/UI/auth/login_screen.dart';
 import 'package:firebase_flutter/UI/auth/post/post_screen.dart';
+import 'package:firebase_flutter/UI/upload_image.dart';
 import 'package:flutter/material.dart';
 
 class SplashServices {
@@ -20,7 +21,7 @@ class SplashServices {
         Duration(seconds: 3),
         () {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => ReadFirestorePost()));
+              MaterialPageRoute(builder: (context) => UploadImageScreen()));
         },
       );
 
@@ -29,8 +30,8 @@ class SplashServices {
       Timer(
         Duration(seconds: 3),
         () {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => ReadFirestorePost()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
       );
     }
