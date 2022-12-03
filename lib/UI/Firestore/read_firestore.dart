@@ -22,10 +22,10 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
 
   // Firebase Firestore Database Snapshot Reference to Read Data:
   final firestoreRef =
-      FirebaseFirestore.instance.collection('users').snapshots();
+      FirebaseFirestore.instance.collection('Posts').snapshots();
 
   // For Update and Delete, We neeed Collection Reference:
-  final collectionRef = FirebaseFirestore.instance.collection('users');
+  final collectionRef = FirebaseFirestore.instance.collection('Posts');
 
   // Text Editing Controller for Search bar:
   final editController = TextEditingController();
@@ -141,7 +141,14 @@ class _ReadFirestorePostState extends State<ReadFirestorePost> {
                               );
                             },
                             icon: Icon(Icons.edit)),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                        IconButton(
+                            onPressed: () {
+                              collectionRef
+                                  .doc(snapshot.data!.docs[index]['id']
+                                      .toString())
+                                  .delete();
+                            },
+                            icon: Icon(Icons.delete)),
                       ],
                     ),
                   ),

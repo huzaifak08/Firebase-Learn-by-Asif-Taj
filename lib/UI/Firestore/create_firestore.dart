@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_flutter/utils/utils.dart';
 import 'package:firebase_flutter/widgets/round_button.dart';
@@ -15,7 +16,9 @@ class _CreateFirestorePostState extends State<CreateFirestorePost> {
   bool loading = false;
 
   // A Collection of name users is created in Firestore database:
-  final firestoreRef = FirebaseFirestore.instance.collection('users');
+  final firestoreRef = FirebaseFirestore.instance.collection('Posts');
+
+  final auth = FirebaseAuth.instance;
 
   // Post Text Field Controller:
   final postController = TextEditingController();
@@ -51,6 +54,8 @@ class _CreateFirestorePostState extends State<CreateFirestorePost> {
 
                 String id = DateTime.now().microsecondsSinceEpoch.toString();
 
+                // final uid = FirebaseAuth.instance.currentUser!.uid;
+
                 firestoreRef.doc(id).set({
                   "id": id,
                   "title": postController.text.toString(),
@@ -72,36 +77,6 @@ class _CreateFirestorePostState extends State<CreateFirestorePost> {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> showMyDialog(String oldTitle, String id) async {
-    editController.text = oldTitle;
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Container(
-            child: TextField(
-              controller: editController,
-            ),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel')),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-
-                  // Firebase Update:
-                },
-                child: Text('Update')),
-          ],
-        );
-      },
     );
   }
 }

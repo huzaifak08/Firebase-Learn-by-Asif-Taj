@@ -21,7 +21,7 @@ class SplashServices {
         Duration(seconds: 3),
         () {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => UploadImageScreen()));
+              MaterialPageRoute(builder: (context) => ReadFirestorePost()));
         },
       );
 
